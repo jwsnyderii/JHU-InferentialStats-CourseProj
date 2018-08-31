@@ -79,3 +79,33 @@ ggplot(data.frame(sd = expSDs), aes(x=sd)) +
          x="Sample Standard Deviation (n=40)",
          title="Sample of 1000 Standard Deviations From the Exponential Distribution")
 ```
+
+# Inferntial Data Analysis
+
+```{r}
+library(dplyr)
+
+data("ToothGrowth")
+summary <- ToothGrowth %>% 
+           group_by(dose, supp) %>% 
+           summarize(mean=mean(len), sd=sd(len), n=n())
+
+knitr::kable(summary, caption = "Summary of Tooth Growth Data")
+```
+
+```{r}
+ggplot(ToothGrowth, aes(x=factor(dose), y=len, fill=supp)) +
+  geom_boxplot()
+```
+
+```{r}
+signif <- ToothGrowth %>% 
+          group_by(dose) %>% 
+          summarize(p = t.test(
+            len[supp=="OJ"],
+            len[supp=="VC"],
+            alternative = "two.sided",
+            paired = FALSE)$p.value)
+knitr::kable(signif, caption="Significance Level by Dose")
+```          
+          
