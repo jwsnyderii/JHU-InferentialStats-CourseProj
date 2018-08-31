@@ -4,42 +4,51 @@ subtitle: "Inferential Statistics: Course Project"
 author: "John Snyder"
 date: "August 26, 2018"
 output: 
-    html_document:
+    pdf_document:
       number_sections: yes
 ---
 
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.pos = 'H')
+```
+
 # Overview
 
-# Simulations
+The goal of this document is twofold. In the first section, simulation is used to demonstrate the Central Limit Theorem.  In the second section, basic statistical inference techniques are used to analyse the `ToothGrowth` data set.
 
-```{r}
+# Central Limit Theorem
+
+The central Limit Theorem states
+
+## Simulations
+
+```{r,plotExpSamples, fig.height=3, fig.width=4, fig.cap="Exponential Distribution Simulated Sample and PDF", }
 library(ggplot2)
 
 lambda <- 0.2
 n <- 40
 m <- 1000
 
-set.seed(2018)
+set.seed(2018) # for reproducibility
 expSamples <- rexp(n*m, lambda)
 expMatrix <- matrix(expSamples, ncol=n, nrow=m)
-```
 
-```{r}
+
 ggplot(data.frame(exp=expSamples), aes(x=exp)) +
     geom_histogram(color="black", bins=50, aes(y=..density..)) +
     stat_function(fun=dexp,
                   color="red",
-                  size=2,
+                  size=1,
                   args=list(rate=lambda))+
     labs(y="Probability Density",
-         x="Observed Value",
-         title="Exponential Distribution Simulated Sample and PDF")
+         x="Observed Value")
 ```
 
-# Sample vs. Theoretical Mean
+## Sample vs. Theoretical Mean
 
 Code for the graphs below is based on the code provided in [a StackExchange question](https://stackoverflow.com/questions/29182228/plotting-normal-curve-over-histogram-using-ggplot2-code-produces-straight-line)
-```{r}
+
+```{r mean, fig.height=3, fig.width=4, fig.cap="Sample of 1000 means from the exponential distribution, n=40 for each sample"}
 # Calculate the means of the 1000 Samples
 expMeans <- apply(expMatrix, 1, mean)
 
@@ -57,13 +66,12 @@ ggplot(data.frame(means = expMeans), aes(x=means)) +
     geom_vline(xintercept = 1/lambda, color="red", size=2)+
     geom_vline(xintercept = mean(expMeans), color="blue", size=2) +
     labs(y="Probability Density",
-         x="Sample Mean (n=40)",
-         title="Sample of 1000 Means From the Exponential Distribution")
+         x="Sample Mean (n=40)")
 ```
 
-# Sample vs. Theoretical Variance
+## Sample vs. Theoretical Variance
 
-```{r}
+```{r sd, fig.height=3, fig.width=4, fig.cap="Sample of 1000 standard deviations from the exponential distribution, n=40 for each sample"}
 expSDs <- apply(expMatrix, 1, sd)
 
 ggplot(data.frame(sd = expSDs), aes(x=sd)) +
@@ -76,11 +84,10 @@ ggplot(data.frame(sd = expSDs), aes(x=sd)) +
     geom_vline(xintercept = 1/lambda, color="red", size=2)+
     geom_vline(xintercept = mean(expSDs), color="blue", size=2) +
     labs(y="Probability Density",
-         x="Sample Standard Deviation (n=40)",
-         title="Sample of 1000 Standard Deviations From the Exponential Distribution")
+         x="Sample Standard Deviation (n=40)")
 ```
 
-# Inferntial Data Analysis
+# Inferential Data Analysis
 
 ```{r}
 library(dplyr)
@@ -108,4 +115,4 @@ signif <- ToothGrowth %>%
             paired = FALSE)$p.value)
 knitr::kable(signif, caption="Significance Level by Dose")
 ```          
-          
+         
